@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSort UCV - Segregación Inteligente de Residuos Sólidos</title>
+  <meta name="description" content="Plataforma digital con códigos QR para la correcta segregación y valorización de residuos sólidos según la norma NTP 900.058:2019 en la Universidad César Vallejo.">
+  <!-- Tailwind CSS & Librerías CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f1712; }
+    ::-webkit-scrollbar-thumb { background: #1e3a2b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2d5a3f; }
+  </style>
+</head>
+<body class="bg-stone-950 text-stone-100 antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- NOTIFICACIÓN TOAST -->
+  <div id="toast" class="fixed top-5 right-5 z-50 hidden bg-emerald-950/95 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 backdrop-blur-md transition-all">
+    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+    <span id="toast-text" class="font-semibold"></span>
+  </div>
+
+  <!-- PANTALLA 1: INICIO INDEPENDIENTE -->
+  <section id="screen-inicio" class="min-h-screen bg-gradient-to-br from-[#02180f] via-[#062b1b] to-[#041c13] text-stone-100 flex flex-col justify-between relative overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-32 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <header class="relative z-10 w-full border-b border-emerald-900/40 bg-stone-950/40 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
+            <i data-lucide="leaf" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="font-bold text-lg sm:text-xl text-white tracking-tight flex items-center gap-2">
+              EcoSort UCV
+              <span class="text-[10px] font-semibold bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-700/50">
+                NTP 900.058
+              </span>
+            </div>
+            <div class="text-[10px] text-emerald-400/90 font-medium hidden sm:block">
+              Plataforma Digital de Segregación de Residuos Sólidos
+            </div>
+          </div>
+        </div>
+        <button onclick="openContentAsGuest()" class="text-xs text-emerald-300 hover:text-white px-3.5 py-1.5 rounded-xl border border-emerald-800/60 bg-emerald-950/60 hover:bg-emerald-900/60 transition-colors cursor-pointer">
+          Explorar sin registrarse &rarr;
+        </button>
+      </div>
+    </header>
+
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 text-xs font-semibold text-emerald-300 bg-emerald-950/80 px-3.5 py-1.5 rounded-full border border-emerald-800/60">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>Universidad César Vallejo &middot; Sostenibilidad Ambiental 2030</span>
+          </div>
+
+          <div class="space-y-3">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+              Segregación Inteligente de Residuos con <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300">Códigos QR</span>
+            </h1>
+            <p class="text-sm sm:text-base text-emerald-100/80 max-w-2xl leading-relaxed">
+              Consulta la clasificación técnica oficial de los 6 tachos según la norma peruana <strong>NTP 900.058:2019</strong>, busca en nuestro catálogo ampliado de 30 materiales cotidianos con fotografías verificadas, escanea las estaciones del campus y sube evidencias para ganar eco-puntos.
+            </p>
+          </div>
+
+          <div class="relative rounded-3xl overflow-hidden border border-emerald-800/60 shadow-2xl bg-stone-900/60 group">
+            <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80" onerror="this.src='https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=1200&q=80'" alt="Estación de reciclaje universitario" class="w-full h-56 sm:h-64 object-cover object-center group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent flex items-end p-4 sm:p-6">
+              <div class="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                <div class="bg-stone-950/80 backdrop-blur-md p-2.5 rounded-xl border border-emerald-800/50">
+                  <div class="text-emerald-400 font-bold text-sm">6 Tachos NTP</div>
+                  <div class="text-[10px] text-stone-300">Norma Oficial 900.058</div>
+                </div>
+                <div class="bg-stone-950/80 backdrop-blur-md p-2.5 rounded-xl border border-emerald-800/50">
+                  <div class="text-teal-300 font-bold text-sm">30 Residuos</div>
+                  <div class="text-[10px] text-stone-300">Guía y Fotos Reales</div>
+                </div>
+                <div class="bg-stone-950/80 backdrop-blur-md p-2.5 rounded-xl border border-emerald-800/50">
+                  <div class="text-cyan-300 font-bold text-sm">Escáner QR</div>
+                  <div class="text-[10px] text-stone-300">Pabellones UCV</div>
+                </div>
+                <div class="bg-stone-950/80 backdrop-blur-md p-2.5 rounded-xl border border-emerald-800/50">
+                  <div class="text-amber-300 font-bold text-sm">Eco-Retos</div>
+                  <div class="text-[10px] text-stone-300">Evidencias y Puntos</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="bg-stone-900/95 backdrop-blur-xl border border-emerald-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
+            <div class="border-b border-stone-800 pb-3">
+              <div class="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold mb-1">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Acceso Comunidad UCV</span>
+              </div>
+              <h2 class="text-xl font-bold text-white">Ingresar a EcoSort</h2>
+              <p class="text-xs text-stone-400 mt-1">Coloca tu correo institucional o prueba el acceso rápido para estudiantes.</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5">
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-stone-300">Usuario o Correo Institucional</label>
+                <div class="relative">
+                  <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3 text-stone-500"></i>
+                  <input type="text" id="login-user" value="70483921@ucvvirtual.edu.pe" placeholder="ej. 70483921@ucvvirtual.edu.pe" required class="w-full pl-9 pr-3 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-stone-100 text-sm placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-stone-300">Contraseña</label>
+                <div class="relative">
+                  <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3 text-stone-500"></i>
+                  <input type="password" id="login-pass" value="••••••••" placeholder="••••••••" required class="w-full pl-9 pr-10 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-stone-100 text-sm placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-stone-300">Campus / Sede UCV</label>
+                <select id="login-campus" class="w-full px-3 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-stone-100 text-sm focus:outline-none focus:border-emerald-500 cursor-pointer">
+                  <option value="Campus Trujillo (Principal)">Campus Trujillo (Principal)</option>
+                  <option value="Campus Lima Norte">Campus Lima Norte</option>
+                  <option value="Campus Lima Este">Campus Lima Este</option>
+                  <option value="Campus San Juan de Lurigancho">Campus San Juan de Lurigancho</option>
+                  <option value="Campus Chiclayo">Campus Chiclayo</option>
+                  <option value="Campus Piura">Campus Piura</option>
+                  <option value="Campus Chimbote">Campus Chimbote</option>
+                  <option value="Campus Tarapoto">Campus Tarapoto</option>
+                </select>
+              </div>
+
+              <div class="pt-2 space-y-2.5">
+                <button type="submit" class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold text-sm rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer">
+                  <span>Ingresar y Abrir Contenido</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="quickDemoLogin()" class="w-full py-2.5 px-4 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/60 font-medium text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Acceso Rápido como Estudiante UCV (Demo)</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="pt-2 border-t border-stone-800 text-center">
+              <button onclick="openContentAsGuest()" class="text-xs text-stone-400 hover:text-emerald-300 underline underline-offset-4 cursor-pointer">
+                Ingresar como visitante sin registrar cuenta
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="relative z-10 w-full border-t border-emerald-900/30 py-4 bg-stone-950/40 text-stone-400 text-xs text-center">
+      Universidad César Vallejo &middot; Dirección de Responsabilidad Social &middot; Norma Técnica Peruana NTP 900.058:2019
+    </footer>
+  </section>
+
+  <!-- PANTALLA 2: CONTENIDOS -->
+  <section id="screen-content" class="hidden min-h-screen flex flex-col">
+    <header class="sticky top-0 z-40 bg-stone-950/90 backdrop-blur-md border-b border-emerald-900/30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <button onclick="backToInicio()" class="flex items-center gap-2.5 text-lg font-bold tracking-tight text-white hover:text-emerald-400 transition-colors cursor-pointer">
+            <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+              <i data-lucide="leaf" class="w-4 h-4"></i>
+            </div>
+            <span class="text-xl font-bold">EcoSort UCV</span>
+          </button>
+          <span id="nav-campus-label" class="hidden md:inline-block text-xs text-emerald-400/80 border-l border-emerald-900/50 pl-3">
+            Campus Trujillo
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="openQRModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 hover:bg-emerald-900 cursor-pointer">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span class="hidden sm:inline">Escanear QR</span>
+          </button>
+          <button onclick="backToInicio()" class="text-xs text-stone-400 hover:text-stone-200 px-2 py-1 cursor-pointer">
+            &larr; Portada
+          </button>
+          <div class="flex items-center gap-2 bg-stone-900 border border-stone-800 rounded-xl px-2.5 py-1 text-xs">
+            <div class="w-6 h-6 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-[10px]">
+              E
+            </div>
+            <div class="hidden sm:block text-left">
+              <div id="nav-user-name" class="font-semibold text-stone-200 leading-none">Estudiante UCV</div>
+              <div id="nav-user-pts" class="text-[10px] text-emerald-400 font-mono">450 pts</div>
+            </div>
+            <span id="nav-user-pts-mobile" class="sm:hidden text-emerald-400 font-mono font-bold">450p</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 flex flex-col lg:flex-row max-w-7xl w-full mx-auto">
+      <aside class="w-full lg:w-72 shrink-0 bg-stone-900/95 border-b lg:border-b-0 lg:border-r border-stone-800 p-4 lg:p-5 flex flex-col justify-between self-start lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] overflow-y-auto">
+        <div class="space-y-4">
+          <div class="pb-3 border-b border-stone-800">
+            <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>Menú de Contenidos</span>
+            </div>
+            <p class="text-xs text-stone-400 mt-1">Selecciona una sección:</p>
+          </div>
+
+          <nav class="space-y-2">
+            <button onclick="switchTab('tachos')" id="btn-tab-tachos" class="sidebar-btn active w-full text-left p-3 rounded-xl border border-emerald-600 bg-emerald-950/80 text-white flex items-center justify-between cursor-pointer transition-all">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="trash-2" class="w-4 h-4 text-emerald-400"></i>
+                <div>
+                  <div class="text-xs font-bold">Tachos Oficiales NTP</div>
+                  <div class="text-[10px] text-stone-400">6 colores normativos</div>
+                </div>
+              </div>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-900 text-emerald-300 font-mono">6</span>
+            </button>
+
+            <button onclick="switchTab('residuos')" id="btn-tab-residuos" class="sidebar-btn w-full text-left p-3 rounded-xl border border-stone-800 bg-stone-950/60 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-between cursor-pointer transition-all">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
+                <div>
+                  <div class="text-xs font-bold">¿Dónde lo boto?</div>
+                  <div class="text-[10px] text-stone-400">30 residuos ampliados</div>
+                </div>
+              </div>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-900 text-teal-300 font-mono">30</span>
+            </button>
+
+            <button onclick="switchTab('retos')" id="btn-tab-retos" class="sidebar-btn w-full text-left p-3 rounded-xl border border-stone-800 bg-stone-950/60 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-between cursor-pointer transition-all">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="trophy" class="w-4 h-4 text-emerald-400"></i>
+                <div>
+                  <div class="text-xs font-bold">Eco-Retos UCV</div>
+                  <div class="text-[10px] text-stone-400">Sube fotos o videos</div>
+                </div>
+              </div>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 font-mono">+Pts</span>
+            </button>
+
+            <button onclick="openQRModal()" class="sidebar-btn w-full text-left p-3 rounded-xl border border-stone-800 bg-stone-950/60 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-between cursor-pointer transition-all">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
+                <div>
+                  <div class="text-xs font-bold">Escanear QR de Tacho</div>
+                  <div class="text-[10px] text-stone-400">Lector interactivo</div>
+                </div>
+              </div>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-950 text-blue-300">Scan</span>
+            </button>
+
+            <button onclick="switchTab('puntos')" id="btn-tab-puntos" class="sidebar-btn w-full text-left p-3 rounded-xl border border-stone-800 bg-stone-950/60 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-between cursor-pointer transition-all">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
+                <div>
+                  <div class="text-xs font-bold">Puntos en Campus</div>
+                  <div class="text-[10px] text-stone-400">Estaciones por facultad</div>
+                </div>
+              </div>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-800 text-stone-400">Mapa</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-stone-800 space-y-2.5">
+          <div class="flex justify-between items-center text-[11px]">
+            <span class="text-stone-400">Rango Actual:</span>
+            <span class="text-emerald-400 font-bold flex items-center gap-1">
+              <i data-lucide="award" class="w-3.5 h-3.5"></i>
+              <span id="rank-title">Eco-Guardián</span>
+            </span>
+          </div>
+          <div class="w-full bg-stone-800 h-2 rounded-full overflow-hidden">
+            <div id="rank-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[75%] transition-all duration-500"></div>
+          </div>
+          <div class="text-[10px] text-stone-400 flex justify-between">
+            <span id="rank-pts-label">450 eco-puntos</span>
+            <span>Próximo: Agente Sostenible</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="flex-1 min-w-0 bg-stone-950 p-4 sm:p-6 lg:p-8 space-y-6">
+        <!-- CONTENIDO 1: TACHOS OFICIALES NTP -->
+        <div id="content-tachos" class="content-panel space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800/40">
+                <i data-lucide="recycle" class="w-3.5 h-3.5"></i>
+                <span>Norma Técnica Peruana NTP 900.058:2019</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1.5">Clasificación Oficial de Tachos en la UCV</h2>
+              <p class="text-xs sm:text-sm text-stone-300 mt-1 max-w-3xl">
+                Se ha ampliado cada tacho con información técnica completa: qué admite, qué está prohibido, tiempos de descomposición, impacto ecológico y cómo prepararlos antes de botar. Haz clic en cualquier tarjeta para abrir su ficha completa.
+              </p>
+            </div>
+            <button onclick="switchTab('residuos')" class="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer">
+              <span>Consultar Residuos</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Tacho Verde -->
+            <div onclick="openBinModal('verde')" class="group bg-stone-900 rounded-3xl border border-stone-800 hover:border-emerald-500 transition-all duration-300 cursor-pointer overflow-hidden shadow-xl hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div class="h-2.5 bg-emerald-500"></div>
+                <div class="relative h-48 overflow-hidden bg-stone-950">
+                  <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=800&q=80'" alt="Tacho Verde Aprovechables" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md bg-emerald-950/80 text-emerald-300 border-emerald-700/60">
+                    Verde &bull; Aprovechables
+                  </span>
+                  <span class="absolute bottom-2 right-3 text-[10px] font-mono text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded-md border border-stone-800">
+                    NTP 900.058
+                  </span>
+                </div>
+                <div class="p-5 space-y-3">
+                  <h3 class="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">Tacho Verde - Aprovechables</h3>
+                  <p class="text-xs text-stone-300 leading-relaxed">Papeles limpios, cartón seco, plásticos PET y PEAD, latas de aluminio y envases Tetra Pak desdoblados.</p>
+                  <div class="pt-2 border-t border-stone-800/80 space-y-1.5 text-xs">
+                    <div class="text-emerald-400 text-[11px] truncate"><strong>&check; Sí:</strong> Botellas PET, latas de jugo, cartón limpio</div>
+                    <div class="text-rose-400 text-[11px] truncate"><strong>&times; No:</strong> Servilletas grasosas, papel higiénico</div>
+                    <div class="text-amber-400 text-[11px]"><strong>Degradación:</strong> PET: 450 a 500 años</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5 pt-0">
+                <div class="w-full py-2 px-3 rounded-xl bg-stone-950 border border-stone-800 group-hover:border-emerald-600 text-xs font-semibold text-emerald-400 flex items-center justify-between">
+                  <span>Ver Ficha Técnica y Reglas &rarr;</span>
+                  <span class="text-[10px] text-stone-400 font-mono">Abrir Detalle</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tacho Marrón -->
+            <div onclick="openBinModal('marron')" class="group bg-stone-900 rounded-3xl border border-stone-800 hover:border-amber-600 transition-all duration-300 cursor-pointer overflow-hidden shadow-xl hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div class="h-2.5 bg-amber-700"></div>
+                <div class="relative h-48 overflow-hidden bg-stone-950">
+                  <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80'" alt="Tacho Marrón Orgánicos" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md bg-amber-950/80 text-amber-300 border-amber-700/60">
+                    Marrón &bull; Orgánicos
+                  </span>
+                  <span class="absolute bottom-2 right-3 text-[10px] font-mono text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded-md border border-stone-800">
+                    NTP 900.058
+                  </span>
+                </div>
+                <div class="p-5 space-y-3">
+                  <h3 class="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">Tacho Marrón - Orgánicos</h3>
+                  <p class="text-xs text-stone-300 leading-relaxed">Cáscaras de frutas, restos de verduras, borra de café pasado, hojas secas y podas del campus.</p>
+                  <div class="pt-2 border-t border-stone-800/80 space-y-1.5 text-xs">
+                    <div class="text-emerald-400 text-[11px] truncate"><strong>&check; Sí:</strong> Cáscaras de fruta, café, hojas secas</div>
+                    <div class="text-rose-400 text-[11px] truncate"><strong>&times; No:</strong> Bolsas plásticas, huesos de carne grandes</div>
+                    <div class="text-amber-400 text-[11px]"><strong>Degradación:</strong> 2 a 6 semanas (compost)</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5 pt-0">
+                <div class="w-full py-2 px-3 rounded-xl bg-stone-950 border border-stone-800 group-hover:border-amber-600 text-xs font-semibold text-amber-400 flex items-center justify-between">
+                  <span>Ver Ficha Técnica y Reglas &rarr;</span>
+                  <span class="text-[10px] text-stone-400 font-mono">Abrir Detalle</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tacho Negro -->
+            <div onclick="openBinModal('negro')" class="group bg-stone-900 rounded-3xl border border-stone-800 hover:border-neutral-500 transition-all duration-300 cursor-pointer overflow-hidden shadow-xl hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div class="h-2.5 bg-stone-700"></div>
+                <div class="relative h-48 overflow-hidden bg-stone-950">
+                  <img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80'" alt="Tacho Negro No Aprovechables" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md bg-stone-900 text-stone-300 border-stone-700">
+                    Negro &bull; No Aprovechables
+                  </span>
+                  <span class="absolute bottom-2 right-3 text-[10px] font-mono text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded-md border border-stone-800">
+                    NTP 900.058
+                  </span>
+                </div>
+                <div class="p-5 space-y-3">
+                  <h3 class="text-lg font-bold text-white group-hover:text-stone-300 transition-colors">Tacho Negro - No Aprovechables</h3>
+                  <p class="text-xs text-stone-300 leading-relaxed">Servilletas con grasa, papel toalla usado, envolturas metalizadas de galletas, tecnopor y colillas.</p>
+                  <div class="pt-2 border-t border-stone-800/80 space-y-1.5 text-xs">
+                    <div class="text-emerald-400 text-[11px] truncate"><strong>&check; Sí:</strong> Papel higiénico, servilletas sucias, tecnopor</div>
+                    <div class="text-rose-400 text-[11px] truncate"><strong>&times; No:</strong> Botellas vacías limpias, pilas (¡Rojo!)</div>
+                    <div class="text-amber-400 text-[11px]"><strong>Degradación:</strong> Más de 300 a 500 años</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5 pt-0">
+                <div class="w-full py-2 px-3 rounded-xl bg-stone-950 border border-stone-800 group-hover:border-neutral-500 text-xs font-semibold text-stone-300 flex items-center justify-between">
+                  <span>Ver Ficha Técnica y Reglas &rarr;</span>
+                  <span class="text-[10px] text-stone-400 font-mono">Abrir Detalle</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tacho Rojo -->
+            <div onclick="openBinModal('rojo')" class="group bg-stone-900 rounded-3xl border border-stone-800 hover:border-red-600 transition-all duration-300 cursor-pointer overflow-hidden shadow-xl hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div class="h-2.5 bg-red-600"></div>
+                <div class="relative h-48 overflow-hidden bg-stone-950">
+                  <img src="https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=800&q=80'" alt="Tacho Rojo Peligrosos" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md bg-red-950/80 text-red-300 border-red-700/60">
+                    Rojo &bull; Peligrosos
+                  </span>
+                  <span class="absolute bottom-2 right-3 text-[10px] font-mono text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded-md border border-stone-800">
+                    NTP 900.058
+                  </span>
+                </div>
+                <div class="p-5 space-y-3">
+                  <h3 class="text-lg font-bold text-white group-hover:text-red-300 transition-colors">Tacho Rojo - Peligrosos</h3>
+                  <p class="text-xs text-stone-300 leading-relaxed">Pilas aisladas con cinta, mascarillas médicas, reactivos de laboratorios y focos fluorescentes rotos.</p>
+                  <div class="pt-2 border-t border-stone-800/80 space-y-1.5 text-xs">
+                    <div class="text-emerald-400 text-[11px] truncate"><strong>&check; Sí:</strong> Pilas AA/AAA aisladas, mascarillas, RAEE</div>
+                    <div class="text-rose-400 text-[11px] truncate"><strong>&times; No:</strong> Basura común de oficina, restos de comida</div>
+                    <div class="text-amber-400 text-[11px]"><strong>Degradación:</strong> Metales pesados tóxicos indefinidos</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5 pt-0">
+                <div class="w-full py-2 px-3 rounded-xl bg-stone-950 border border-stone-800 group-hover:border-red-600 text-xs font-semibold text-red-400 flex items-center justify-between">
+                  <span>Ver Ficha Técnica y Reglas &rarr;</span>
+                  <span class="text-[10px] text-stone-400 font-mono">Abrir Detalle</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tacho Azul -->
+            <div onclick="openBinModal('azul')" class="group bg-stone-900 rounded-3xl border border-stone-800 hover:border-blue-600 transition-all duration-300 cursor-pointer overflow-hidden shadow-xl hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div class="h-2.5 bg-blue-600"></div>
+                <div class="relative h-48 overflow-hidden bg-stone-950">
+                  <img src="https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80'" alt="Tacho Azul Papel y Cartón" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md bg-blue-950/80 text-blue-300 border-blue-700/60">
+                    Azul &bull; Papel y Cartón
+                  </span>
+                  <span class="absolute bottom-2 right-3 text-[10px] font-mono text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded-md border border-stone-800">
+                    NTP 900.058
+                  </span>
+                </div>
+                <div class="p-5 space-y-3">
+                  <h3 class="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">Tacho Azul - Papel y Cartón</h3>
+                  <p class="text-xs text-stone-300 leading-relaxed">Hojas bond de exámenes antiguos, folletos, revistas y cajas de cartón sin grasa ni grapas en biblioteca.</p>
+                  <div class="pt-2 border-t border-stone-800/80 space-y-1.5 text-xs">
+                    <div class="text-emerald-400 text-[11px] truncate"><strong>&check; Sí:</strong> Hojas de apuntes secas, cajas de cartón</div>
+                    <div class="text-rose-400 text-[11px] truncate"><strong>&times; No:</strong> Vouchers térmicos (BPA), papel con grasa</div>
+                    <div class="text-amber-400 text-[11px]"><strong>Degradación:</strong> Papel: 2 a 5 meses</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5 pt-0">
+                <div class="w-full py-2 px-3 rounded-xl bg-stone-950 border border-stone-800 group-hover:border-blue-600 text-xs font-semibold text-blue-400 flex items-center justify-between">
+                  <span>Ver Ficha Técnica y Reglas &rarr;</span>
+                  <span class="text-[10px] text-stone-400 font-mono">Abrir Detalle</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tacho Blanco -->
+            <div onclick="openBinModal('blanco')" class="group bg-stone-900 rounded-3xl border border-stone-800 hover:border-slate-400 transition-all duration-300 cursor-pointer overflow-hidden shadow-xl hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div class="h-2.5 bg-slate-300"></div>
+                <div class="relative h-48 overflow-hidden bg-stone-950">
+                  <img src="https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=800&q=80" onerror="this.src='https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=800&q=80'" alt="Tacho Blanco Plásticos Limpios" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md bg-slate-800 text-slate-200 border-slate-600">
+                    Blanco &bull; Plásticos Limpios
+                  </span>
+                  <span class="absolute bottom-2 right-3 text-[10px] font-mono text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded-md border border-stone-800">
+                    NTP 900.058
+                  </span>
+                </div>
+                <div class="p-5 space-y-3">
+                  <h3 class="text-lg font-bold text-white group-hover:text-slate-300 transition-colors">Tacho Blanco - Plásticos Rígidos</h3>
+                  <p class="text-xs text-stone-300 leading-relaxed">Botellas de agua mineral transparentes, tapas de polipropileno para campañas benéficas y envases lavados.</p>
+                  <div class="pt-2 border-t border-stone-800/80 space-y-1.5 text-xs">
+                    <div class="text-emerald-400 text-[11px] truncate"><strong>&check; Sí:</strong> Botellas PET, tapas plásticas (Aniquem)</div>
+                    <div class="text-rose-400 text-[11px] truncate"><strong>&times; No:</strong> Bolsas plásticas sucias, cubiertos con grasa</div>
+                    <div class="text-amber-400 text-[11px]"><strong>Degradación:</strong> 150 a 500 años</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5 pt-0">
+                <div class="w-full py-2 px-3 rounded-xl bg-stone-950 border border-stone-800 group-hover:border-slate-400 text-xs font-semibold text-slate-300 flex items-center justify-between">
+                  <span>Ver Ficha Técnica y Reglas &rarr;</span>
+                  <span class="text-[10px] text-stone-400 font-mono">Abrir Detalle</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENIDO 2: CATÁLOGO AMPLIADO -->
+        <div id="content-residuos" class="content-panel hidden space-y-6">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-400 bg-teal-950/60 px-2.5 py-1 rounded-md border border-teal-800/40">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <span>Buscador y Catálogo Ampliado</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1.5">¿Dónde boto este residuo?</h2>
+              <p class="text-xs sm:text-sm text-stone-300 mt-1">30 residuos con imágenes representativas y consejos de preparación para el campus UCV.</p>
+            </div>
+            <div class="relative w-full md:w-80">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-stone-400"></i>
+              <input type="text" id="mat-search" oninput="filterMaterials()" placeholder="Buscar: café, pizza, pila, examen, yogurt..." class="w-full pl-9 pr-4 py-2.5 bg-stone-900 border border-stone-700 rounded-xl text-xs text-white placeholder-stone-400 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="setFilterCategory('todos')" class="cat-pill active px-3 py-1.5 rounded-xl border bg-emerald-600 text-stone-950 font-bold border-emerald-500 cursor-pointer">Todos (30)</button>
+            <button onclick="setFilterCategory('aulas')" class="cat-pill px-3 py-1.5 rounded-xl border bg-stone-900 text-stone-300 border-stone-800 hover:border-stone-700 cursor-pointer">Aulas y Oficina</button>
+            <button onclick="setFilterCategory('cafeteria')" class="cat-pill px-3 py-1.5 rounded-xl border bg-stone-900 text-stone-300 border-stone-800 hover:border-stone-700 cursor-pointer">Cafetería y Alimentos</button>
+            <button onclick="setFilterCategory('envases')" class="cat-pill px-3 py-1.5 rounded-xl border bg-stone-900 text-stone-300 border-stone-800 hover:border-stone-700 cursor-pointer">Envases y Bebidas</button>
+            <button onclick="setFilterCategory('peligrosos')" class="cat-pill px-3 py-1.5 rounded-xl border bg-stone-900 text-stone-300 border-stone-800 hover:border-stone-700 cursor-pointer">Peligrosos y RAEE</button>
+            <button onclick="setFilterCategory('otros')" class="cat-pill px-3 py-1.5 rounded-xl border bg-stone-900 text-stone-300 border-stone-800 hover:border-stone-700 cursor-pointer">Higiene</button>
+          </div>
+
+          <div id="materials-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4"></div>
+        </div>
+
+        <!-- CONTENIDO 3: ECO-RETOS UCV -->
+        <div id="content-retos" class="content-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-md border border-amber-800/40">
+                <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
+                <span>Gamificación y Reconocimiento</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1.5">Eco-Retos UCV: Sube tu Evidencia</h2>
+              <p class="text-xs sm:text-sm text-stone-300 mt-1">Sube tus fotos o videos demostrando tu segregación en el campus y acumula eco-puntos.</p>
+            </div>
+            <div class="bg-stone-900 border border-stone-800 p-3 rounded-2xl flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+                <i data-lucide="award" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <div class="text-[11px] text-stone-400">Total Acumulado</div>
+                <div id="retos-pts-display" class="text-lg font-bold text-white font-mono">450 Eco-Puntos</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-stone-900 rounded-3xl border border-stone-800 p-5 space-y-4 flex flex-col justify-between hover:border-emerald-700/60 transition-all shadow-lg">
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-800">+150 Puntos</span>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded border bg-emerald-950 text-emerald-400 border-emerald-800">Fácil</span>
+                </div>
+                <h3 class="text-base font-bold text-white">Desafío Botella Cero Contaminación</h3>
+                <p class="text-xs text-stone-300">Enjuaga, retira la tapa y aplasta al menos 2 botellas de plástico PET antes de depositarlas en el tacho verde o blanco.</p>
+              </div>
+              <button onclick="openUploadModal('Desafío Botella Cero Contaminación', 150)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                <span>Cumplir Reto (Subir Foto/Video)</span>
+              </button>
+            </div>
+
+            <div class="bg-stone-900 rounded-3xl border border-stone-800 p-5 space-y-4 flex flex-col justify-between hover:border-emerald-700/60 transition-all shadow-lg">
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-800">+200 Puntos</span>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded border bg-amber-950 text-amber-400 border-amber-800">Fácil</span>
+                </div>
+                <h3 class="text-base font-bold text-white">Revolución Orgánica en la Cafetería</h3>
+                <p class="text-xs text-stone-300">Lleva las cáscaras de tu fruta o merienda sin bolsa plástica directamente al tacho marrón del comedor universitario.</p>
+              </div>
+              <button onclick="openUploadModal('Revolución Orgánica en la Cafetería', 200)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                <span>Cumplir Reto (Subir Foto/Video)</span>
+              </button>
+            </div>
+
+            <div class="bg-stone-900 rounded-3xl border border-stone-800 p-5 space-y-4 flex flex-col justify-between hover:border-emerald-700/60 transition-all shadow-lg">
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-800">+250 Puntos</span>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded border bg-blue-950 text-blue-400 border-blue-800">Intermedio</span>
+                </div>
+                <h3 class="text-base font-bold text-white">Disposición Segura de Pilas y RAEE</h3>
+                <p class="text-xs text-stone-300">Identifica una pila gastada, aísla sus polos con cinta y llévala al punto ecológico rojo o ánfora RAEE.</p>
+              </div>
+              <button onclick="openUploadModal('Disposición Segura de Pilas y RAEE', 250)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                <span>Cumplir Reto (Subir Foto/Video)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENIDO 4: PUNTOS ECOLÓGICOS -->
+        <div id="content-puntos" class="content-panel hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded-md border border-blue-800/40">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                <span>Mapeo de Estaciones en Campus</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1.5">Estaciones de Reciclaje y Códigos QR</h2>
+              <p class="text-xs sm:text-sm text-stone-300 mt-1">Encuentra los puntos instalados en tu facultad y escanea su código QR oficial.</p>
+            </div>
+            <button onclick="openQRModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
+              <i data-lucide="qr-code" class="w-4 h-4"></i>
+              <span>Abrir Escáner QR</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+            <div class="p-5 bg-stone-900 rounded-2xl border border-stone-800 space-y-3 hover:border-emerald-700/60 transition-all flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <div class="flex justify-between font-mono text-emerald-400">
+                  <span class="font-bold">QR-UCV-PA-101</span>
+                  <span class="text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded text-[10px]">Operativo</span>
+                </div>
+                <div class="font-bold text-white text-base">Pabellón A (Piso 1)</div>
+                <p class="text-stone-400 text-xs">Facultad de Ingeniería · Tachos Verde, Marrón, Negro, Azul y Rojo</p>
+              </div>
+              <button onclick="simulateScanFor('QR-UCV-PA-101', 'Pabellón A (Piso 1)')" class="w-full py-2 bg-stone-950 text-emerald-300 border border-stone-800 hover:border-emerald-600 rounded-xl cursor-pointer">Escanear estación</button>
+            </div>
+
+            <div class="p-5 bg-stone-900 rounded-2xl border border-stone-800 space-y-3 hover:border-emerald-700/60 transition-all flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <div class="flex justify-between font-mono text-emerald-400">
+                  <span class="font-bold">QR-UCV-CAF-204</span>
+                  <span class="text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded text-[10px]">Operativo</span>
+                </div>
+                <div class="font-bold text-white text-base">Cafetería Universitaria</div>
+                <p class="text-stone-400 text-xs">Comedor Central · Tachos Verde, Marrón, Negro y Blanco</p>
+              </div>
+              <button onclick="simulateScanFor('QR-UCV-CAF-204', 'Cafetería Universitaria')" class="w-full py-2 bg-stone-950 text-emerald-300 border border-stone-800 hover:border-emerald-600 rounded-xl cursor-pointer">Escanear estación</button>
+            </div>
+
+            <div class="p-5 bg-stone-900 rounded-2xl border border-stone-800 space-y-3 hover:border-emerald-700/60 transition-all flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <div class="flex justify-between font-mono text-emerald-400">
+                  <span class="font-bold">QR-UCV-BIB-302</span>
+                  <span class="text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded text-[10px]">Operativo</span>
+                </div>
+                <div class="font-bold text-white text-base">Biblioteca Central</div>
+                <p class="text-stone-400 text-xs">Sala de Lectura (Piso 2) · Tachos Azul, Verde y Negro</p>
+              </div>
+              <button onclick="simulateScanFor('QR-UCV-BIB-302', 'Biblioteca Central')" class="w-full py-2 bg-stone-950 text-emerald-300 border border-stone-800 hover:border-emerald-600 rounded-xl cursor-pointer">Escanear estación</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="bg-stone-950 border-t border-stone-800 py-6 text-xs text-stone-400 text-center space-y-2">
+      <div class="text-stone-300 font-bold">EcoSort UCV &middot; Universidad César Vallejo</div>
+      <p>Alineado con la Norma Técnica Peruana NTP 900.058:2019, Ministerio del Ambiente (MINAM) y Ley N° 1278.</p>
+    </footer>
+  </section>
+
+  <!-- MODAL DE INFORMACIÓN -->
+  <div id="info-modal" class="fixed inset-0 z-50 hidden bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-emerald-700/60 rounded-3xl max-w-2xl w-full p-6 space-y-4 text-xs relative max-h-[88vh] overflow-y-auto shadow-2xl">
+      <button onclick="closeInfoModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center text-base cursor-pointer">&times;</button>
+      <div id="modal-content" class="space-y-4"></div>
+      <button onclick="closeInfoModal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold rounded-xl cursor-pointer text-sm">Entendido, cerrar ficha</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE EVIDENCIA -->
+  <div id="upload-modal" class="fixed inset-0 z-50 hidden bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-emerald-700/60 rounded-3xl max-w-md w-full p-6 space-y-4 text-xs relative shadow-2xl">
+      <button onclick="closeUploadModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center text-base cursor-pointer">&times;</button>
+      <div>
+        <span class="text-[10px] font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800" id="upload-pts-badge">+150 Puntos</span>
+        <h3 id="upload-title" class="text-base font-bold text-white mt-1">Subir Evidencia de Eco-Reto</h3>
+        <p class="text-stone-400 text-[11px] mt-1">Carga tu foto o video demostrando tu segregación en el campus.</p>
+      </div>
+
+      <div class="border-2 border-dashed border-stone-700 hover:border-emerald-500 p-6 rounded-2xl text-center space-y-2 cursor-pointer bg-stone-950/60 transition-colors">
+        <i data-lucide="camera" class="w-8 h-8 text-emerald-400 mx-auto"></i>
+        <div id="upload-file-label" class="text-stone-300 font-semibold">Selecciona o arrastra una foto o video</div>
+        <input type="file" id="evidence-file" accept="image/*,video/*" onchange="handleFileSelected(event)" class="text-[11px] text-stone-400 w-full">
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-[11px] text-stone-300 font-medium">Comentario / Pabellón de la Estación:</label>
+        <textarea id="upload-notes" rows="2" placeholder="Ej: Enjuagué y aplasté 2 botellas en la estación ecológica del Pabellón B..." class="w-full p-2.5 bg-stone-950 border border-stone-700 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-500"></textarea>
+      </div>
+
+      <button onclick="submitEvidence()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold rounded-xl cursor-pointer shadow-md">
+        Validar Evidencia y Sumar Puntos
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL DE QR -->
+  <div id="qr-modal" class="fixed inset-0 z-50 hidden bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-emerald-700/60 rounded-3xl max-w-sm w-full p-6 space-y-4 text-xs text-center relative shadow-2xl">
+      <button onclick="closeQRModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center text-base cursor-pointer">&times;</button>
+      <div class="w-16 h-16 rounded-2xl bg-emerald-950/80 border border-emerald-700/60 flex items-center justify-center text-emerald-400 mx-auto">
+        <i data-lucide="qr-code" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-base font-bold text-white">Escáner de Estación QR UCV</h3>
+      <p class="text-stone-400 text-[11px]">Acerca la cámara de tu smartphone al código QR ubicado sobre los tachos del campus.</p>
+      <div id="qr-station-info" class="p-3 bg-stone-950 border border-emerald-800 rounded-2xl text-emerald-300 font-semibold text-xs">
+        &iexcl;Estación Pabellón A (Piso 1) Detectada!
+      </div>
+      <button onclick="claimQRScan()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold rounded-xl cursor-pointer">
+        Reclamar +25 Eco-Puntos
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let userPoints = 450;
+    let currentChallengePoints = 150;
+    let activeCategory = 'todos';
+
+    const TACHOS_DATA = {
+      verde: {
+        titulo: 'Tacho Verde - Residuos Aprovechables',
+        norma: 'NTP 900.058:2019 / Verde Esmeralda',
+        imagen: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80',
+        fallback: 'https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=800&q=80',
+        desc: 'Recibe materiales inorgánicos limpios y secos que cuentan con una cadena formal de reciclaje y valorización industrial.',
+        si: ['Botellas plásticas de bebidas (PET 1) enjuagadas y aplastadas', 'Hojas bond de apuntes, copias y exámenes secos sin grapas', 'Cajas de cartón corrugado limpias y desdobladas', 'Latas de aluminio de gaseosas, energizantes y jugos', 'Envases de hojalata y conservas lavados', 'Envases Tetra Pak de leche o jugos limpios y secos'],
+        no: ['Servilletas de papel con grasa o restos de salsas', 'Papel higiénico o papel toalla de servicios higiénicos', 'Vasos térmicos de polipapel con capa de plástico', 'Envolturas metalizadas de galletas o snacks', 'Pilas o baterías de cualquier tipo'],
+        prep: 'Enjuaga el envase para quitar restos de azúcar o grasa, escurre, retira la tapa y aplástalo pisándolo para reducir hasta un 70% su volumen.',
+        tiempo: 'Plásticos PET: 450 a 500 años. Latas: 200 a 500 años. Tetra Pak: 30 a 35 años.',
+        destino: 'Empresas recicladoras autorizadas por MINAM para fabricación de resina rPET, cajas y telas sintéticas.',
+        impacto: 'Por cada tonelada de plástico PET reciclado en la UCV, se ahorran 3.8 barriles de petróleo crudo y 1.5 toneladas de CO₂.'
+      },
+      marron: {
+        titulo: 'Tacho Marrón - Residuos Orgánicos',
+        norma: 'NTP 900.058:2019 / Marrón Tierra',
+        imagen: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+        fallback: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
+        desc: 'Diseñado para recolectar materia biodegradable que se transforma en compost y abono orgánico para los jardines UCV.',
+        si: ['Cáscaras de plátano, manzana, mandarina, naranja y palta', 'Restos de ensaladas sin salsas, mayonesa ni vinagretas', 'Borra de café pasado y bolsitas filtrantes de té sin grapa metálica', 'Cáscaras de huevo trituradas', 'Hojas secas, flores y césped de podas del campus'],
+        no: ['Bolsas plásticas anudadas con comida adentro', 'Huesos grandes de pollo, res o carnes grasosas', 'Comida con abundante salsa, fritura o aceites', 'Excrementos de animales o pañales desechables', 'Tecnopor o cubiertos de plástico'],
+        prep: 'Deposita el residuo orgánico directamente sin bolsa. Retira las etiquetas adhesivas de marcas de frutas.',
+        tiempo: '2 a 6 semanas en la planta de compostaje universitario.',
+        destino: 'Área de compostaje y lombricultura UCV para generar compost y humus para los jardines del campus.',
+        impacto: 'Evita la generación de gas metano en vertederos (gas 25 veces más contaminante que el CO₂).'
+      },
+      negro: {
+        titulo: 'Tacho Negro - No Aprovechables',
+        norma: 'NTP 900.058:2019 / Negro Carbón',
+        imagen: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=800&q=80',
+        fallback: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80',
+        desc: 'Para todos los residuos que por su degradación, grasa o composición mixta no pueden reciclarse y van a relleno sanitario.',
+        si: ['Servilletas de papel con grasa de pizza, hamburguesas o pollo', 'Papel higiénico y papel toalla húmedo de baño', 'Vasos polipapel encerados de café', 'Envolturas metalizadas de galletas y papas fritas', 'Envases de tecnopor (poliestireno expandido)', 'Cubiertos plásticos descartables engrasados', 'Colillas de cigarrillo apagadas y vouchers POS'],
+        no: ['Botellas plásticas de bebidas limpias (van al verde o blanco)', 'Hojas de papel secas o cuadernos limpios (van al azul)', 'Pilas alcalinas o baterías (¡PROHIBIDO! van al rojo)'],
+        prep: 'Verifica que no contenga partes reciclables separables (ej: la tapa limpia de la caja de pizza). Escurre líquidos.',
+        tiempo: '300 a 1,000 años para tecnopor y envolturas multilaminadas.',
+        destino: 'Transporte formal municipal hacia rellenos sanitarios autorizados por el MINAM (Huaycoloro, Zapallal, El Milagro).',
+        impacto: 'Una segregación adecuada en la UCV reduce hasta un 60% la basura que se envía al relleno sanitario.'
+      },
+      rojo: {
+        titulo: 'Tacho Rojo - Residuos Peligrosos',
+        norma: 'NTP 900.058:2019 / Rojo Alerta',
+        imagen: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=800&q=80',
+        fallback: 'https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=800&q=80',
+        desc: 'Manejo con alta bioseguridad para residuos tóxicos, corrosivos, inflamables o biológicos que ponen en riesgo la salud.',
+        si: ['Pilas alcalinas (AA, AAA, botón) con cinta aislante en sus polos', 'Mascarillas quirúrgicas, KN95 y guantes de látex o nitrilo', 'Frascos vacíos de reactivos químicos de laboratorios de ciencias', 'Focos fluorescentes o ahorradores rotos (vapor de mercurio)', 'Baterías de litio de smartphones o laptops infladas', 'Envases de solventes, pinturas, thiner o desinfectantes fuertes'],
+        no: ['Basura común ordinaria de salón de clase', 'Cáscaras de frutas o alimentos', 'Botellas plásticas comunes de agua'],
+        prep: 'Para pilas: cubrir ambos polos (+ y -) con cinta adhesiva para evitar cortocircuitos. Para vidrios rotos: envolver en cartón grueso.',
+        tiempo: 'Metales pesados como mercurio, cadmio y plomo contaminan durante milenios.',
+        destino: 'Empresa Operadora de Residuos Sólidos (EO-RS) registrada ante MINAM para incineración o confinamiento en celdas de seguridad.',
+        impacto: 'Una sola pila de mercurio arrojada a la basura común puede contaminar 600,000 litros de agua dulce.'
+      },
+      azul: {
+        titulo: 'Tacho Azul - Papel y Cartón',
+        norma: 'NTP 900.058:2019 / Azul Ultramar',
+        imagen: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=800&q=80',
+        fallback: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80',
+        desc: 'Contenedor especializado en bibliotecas y áreas académicas para captar fibra de celulosa pura sin mezclar con botellas.',
+        si: ['Hojas bond impresas o escritas (apuntes, exámenes pasados)', 'Revistas universitarias, separatas, folletos y trípticos', 'Cajas de cartulina limpias de medicamentos o útiles', 'Periódicos pasados y carpetas de manila', 'Cajas de cartón corrugado limpias y aplanadas'],
+        no: ['Papel carbón o papel térmico de vouchers POS (Bisfenol A)', 'Papel higiénico o servilletas usadas', 'Cajas de pizza con grasa o queso pegado'],
+        prep: 'Retira clips, grapas y espirales plásticos. Aplasta las cajas de cartón para que no ocupen todo el tacho.',
+        tiempo: 'Papel: 2 a 5 meses al aire libre.',
+        destino: 'Industrias papeleras peruanas para repulpado y fabricación de nuevos cuadernos ecológicos y cajas.',
+        impacto: 'Reciclar 1 tonelada de papel en la UCV salva 17 árboles maduros y 26,000 litros de agua potable.'
+      },
+      blanco: {
+        titulo: 'Tacho Blanco - Plásticos Limpios y Rígidos',
+        norma: 'NTP 900.058:2019 / Blanco Pureza',
+        imagen: 'https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=800&q=80',
+        fallback: 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=800&q=80',
+        desc: 'Instalado en losas deportivas y quioscos para capturar botellas de agua e hidratantes y tapas para campañas benéficas.',
+        si: ['Botellas de agua mineral y bebidas deportivas PET transparentes', 'Tapas plásticas de rosca para la campaña de Aniquem', 'Envases de yogurt bebible de plástico blanco o transparente lavados', 'Vasos plásticos rígidos reutilizables limpios'],
+        no: ['Bolsas plásticas de un solo uso', 'Cubiertos con restos de comida', 'Envases de tecnopor'],
+        prep: 'Vacía todo el líquido, enjuaga con un chorrito de agua y písala para compactarla. Las tapas van al tacho o al ánfora en forma de corazón.',
+        tiempo: '150 a 500 años dependiendo del grosor del polímero.',
+        destino: 'Transformación en fibra textil ecológica para camisetas deportivas y nuevas botellas 100% recicladas.',
+        impacto: 'Aporta a la campaña benéfica de rehabilitación de niños y reduce el consumo de resina plástica virgen.'
+      }
+    };
+
+    const RESIDUOS_LISTA = [
+      { nombre: 'Botella de Plástico PET (Agua/Gaseosa)', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde / Blanco', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=400&q=80', prep: 'Vacía el líquido, enjuaga brevemente, retira la tapa y aplástala firmemente.', error: 'Tirarla con gaseosa adentro que ensucia el papel del contenedor.', tiempo: '450 a 500 años', impacto: 'Se convierte en camisetas deportivas o botellas 100% recicladas.', consejo: 'Dona la tapa plástica en los buzones de Aniquem del campus.' },
+      { nombre: 'Cáscaras de Plátano y Manzana', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Marrón (Orgánicos)', tachoClass: 'bg-amber-950 text-amber-300 border-amber-700/60', img: 'https://images.unsplash.com/photo-1587132137056-bfbf0166836e?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=400&q=80', prep: 'Arrojar directamente al tacho marrón sin bolsa plástica. Retirar etiquetas comerciales.', error: 'Meterla dentro de una bolsita plástica anudada antes de botarla.', tiempo: '2 a 6 semanas', impacto: 'Produce abono natural y compost para los jardines de la universidad.', consejo: 'Hay tachos marrones en todos los quioscos y áreas verdes.' },
+      { nombre: 'Servilleta con Grasa o Mayonesa', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=400&q=80', prep: 'Dóblala y arrójala al tacho negro. No intentes lavarla; las fibras grasientas no sirven.', error: 'Creer que por ser papel va al tacho azul (arruina el lote de reciclaje).', tiempo: '3 a 6 meses', impacto: 'Va a relleno sanitario municipal para disposición controlada.', consejo: 'Usa una sola servilleta por comida para reducir consumo.' },
+      { nombre: 'Pilas Alcalinas (AA, AAA, Botón)', cat: 'peligrosos', catNombre: 'Peligrosos y RAEE', tacho: 'Tacho Rojo (Peligrosos)', tachoClass: 'bg-red-950 text-red-300 border-red-700/60', img: 'https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1592659762303-90081d14b077?auto=format&fit=crop&w=400&q=80', prep: 'Coloca cinta aislante en ambos polos (+ y -) para evitar fugas químicas.', error: 'Botarlas al tacho del salón o baño contaminando agua subterránea.', tiempo: 'Más de 1,000 años', impacto: 'Confinamiento seguro por operador especial autorizado por MINAM.', consejo: 'Encuentra ánforas rojas en laboratorios y tópico del campus.' },
+      { nombre: 'Vaso de Café Descartable Polipapel', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1577937927133-66ef06acdf18?auto=format&fit=crop&w=400&q=80', prep: 'Vacía el café restante. La tapa plástica rígida limpia puede ir al verde.', error: 'Creer que es 100% cartón: posee una película plástica interna no separable.', tiempo: '30 a 50 años', impacto: 'Disposición segura en relleno sanitario.', consejo: 'Trae tu taza o termo reutilizable al cafetín UCV.' },
+      { nombre: 'Lata de Aluminio de Bebida', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde (Aprovechables)', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1584727638096-042c45049ebe?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80', prep: 'Vacía todo el líquido y aplástala pisándola verticalmente.', error: 'Usarla de cenicero o meterle papeles o sorbetes dentro.', tiempo: '200 a 500 años', impacto: 'El aluminio se recicla infinitas veces con 95% de ahorro energético.', consejo: '10 latas recicladas ahorran energía para 30 horas de laptop.' },
+      { nombre: 'Hojas Bond de Exámenes y Copias', cat: 'aulas', catNombre: 'Aulas y Oficina', tacho: 'Tacho Azul / Verde (Papel)', tachoClass: 'bg-blue-950 text-blue-300 border-blue-700/60', img: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=400&q=80', prep: 'Retira clips, grapas y cintas. Deposítalas estiradas o dobladas suavemente.', error: 'Hacer bolas apretadas de papel o tirarlas manchadas de comida.', tiempo: '2 a 5 meses', impacto: 'Se transforma en nuevos textos y cuadernos universitarios.', consejo: 'Usa ambos lados de las hojas antes de depositarlas.' },
+      { nombre: 'Envase Tetra Pak (Jugo / Leche)', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde (Aprovechables)', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=400&q=80', prep: 'Despliega las orejitas superior e inferior, enjuaga y aplástalo plano.', error: 'Tirarlo inflado con restos de leche cortada que huelen mal.', tiempo: '30 a 35 años', impacto: 'El cartón se separa y el polialuminio se prensa en tejas para casas.', consejo: 'La UCV dona Tetra Pak al programa de techos comunitarios T-Plak.' },
+      { nombre: 'Envoltura Metalizada de Snacks', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=400&q=80', prep: 'Sacude las migajas interiores y deposita en el tacho negro.', error: 'Confundir el brillo plateado con aluminio puro reciclable.', tiempo: '100 a 400 años', impacto: 'Relleno sanitario; se pueden usar para fabricar ecoladrillos.', consejo: 'Elige snacks a granel en envases reutilizables.' },
+      { nombre: 'Caja de Pizza Grasosa', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (Base) / Azul (Tapa)', tachoClass: 'bg-stone-900 text-amber-300 border-stone-700', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80', prep: 'Corta la tapa limpia y ponla al Tacho Azul; la base con grasa al Negro.', error: 'Tirar la caja entera con queso pegado al tacho de papel.', tiempo: '1 a 2 años', impacto: 'La tapa limpia sí se recicla; la base va a relleno.', consejo: 'Regla de oro: si tiene aceite animal/vegetal, no se recicla.' },
+      { nombre: 'Borra de Café y Bolsitas de Té', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Marrón (Orgánicos)', tachoClass: 'bg-amber-950 text-amber-300 border-amber-700/60', img: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=400&q=80', prep: 'Vierte directo. Si es té en bolsita, retira la grapita de metal.', error: 'Arrojar la bolsita con todo el hilo y grapa metálica al compost.', tiempo: '2 a 4 semanas', impacto: 'Aporta nitrógeno rico al huerto agroecológico UCV.', consejo: 'Las cafeterías UCV donan más de 50 kg de borra al huerto del campus.' },
+      { nombre: 'Botella o Frasco de Vidrio', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde (o Campana de Vidrio)', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=400&q=80', prep: 'Enjuaga, retira la chapita y deposita con cuidado sin romperlo.', error: 'Arrojarlo con fuerza rompiéndolo o mezclar con tazas de cerámica.', tiempo: 'Más de 4,000 años', impacto: 'El vidrio es 100% infinitamente reciclable.', consejo: 'Si está quebrado, envuélvelo en cartón para no cortar al personal.' },
+      { nombre: 'Tapas Plásticas de Polipropileno', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Blanco / Buzón Aniquem', tachoClass: 'bg-slate-800 text-slate-200 border-slate-600', img: 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=400&q=80', prep: 'Sepáralas limpias y deposítalas en el ánfora en forma de corazón.', error: 'Dejarlas apretadas dentro de botellas que no pueden aplastarse.', tiempo: '100 a 300 años', impacto: 'Financian terapias de rehabilitación para niños con quemaduras.', consejo: 'Colecciona las tapas con tu grupo de clase.' },
+      { nombre: 'Mascarilla o Guantes Usados', cat: 'peligrosos', catNombre: 'Peligrosos y RAEE', tacho: 'Tacho Rojo (Bioseguridad)', tachoClass: 'bg-red-950 text-red-300 border-red-700/60', img: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=400&q=80', prep: 'Corta las ligas elásticas para no atrapar aves y arroja al tacho rojo.', error: 'Botarla al tacho verde de reciclaje o dejarla en bancas.', tiempo: '450 años', impacto: 'Incineración controlada de residuos patogénicos.', consejo: 'Hay tachos rojos frente a laboratorios de medicina y enfermería.' },
+      { nombre: 'Envase de Yogurt Bebible Limpio', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde o Blanco', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1571212515416-fef01fc43637?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=400&q=80', prep: 'Enjuaga con un poco de agua, sacude y retira el aluminio.', error: 'Dejarlo con restos espesos de yogurt que fermentan al sol.', tiempo: '150 a 300 años', impacto: 'Se transforma en tuberías de riego y baldes industriales.', consejo: 'Los lavamanos de cafetería permiten un enjuague rápido.' },
+      { nombre: 'Envase de Tecnopor (Comida)', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80', prep: 'Limpia residuos grandes de comida y deséchalo al tacho negro.', error: 'Meterlo al tacho verde: el tecnopor no tiene reciclaje comercial local.', tiempo: 'Más de 500 años', impacto: 'Relleno sanitario; regulado por Ley N° 30884.', consejo: 'Usa táperes reutilizables o envases de bagazo de caña.' },
+      { nombre: 'Recibos Térmicos y Vouchers POS', cat: 'aulas', catNombre: 'Aulas y Oficina', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80', prep: 'Tirar al tacho negro.', error: 'Botarlo al tacho azul de papel: contiene Bisfenol A que daña la celulosa.', tiempo: '5 a 10 años', impacto: 'Disposición segura para aislar químicos reactivos.', consejo: 'Pide siempre tu boleta digital por correo electrónico.' },
+      { nombre: 'Cables USB y Cargadores (RAEE)', cat: 'peligrosos', catNombre: 'Peligrosos y RAEE', tacho: 'Tacho Rojo / Punto RAEE', tachoClass: 'bg-red-950 text-red-300 border-red-700/60', img: 'https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=400&q=80', prep: 'Enrolla el cable y deposítalo en el ánfora RAEE o tacho rojo.', error: 'Tirarlo a la basura común terminando en quemas clandestinas.', tiempo: '400 años', impacto: 'Recuperación de cobre, estaño y polímeros ignífugos.', consejo: 'La Escuela de Ingeniería de Sistemas UCV realiza campañas RAEE.' },
+      { nombre: 'Hojas Secas y Césped de Jardines', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Marrón (Orgánicos)', tachoClass: 'bg-amber-950 text-amber-300 border-amber-700/60', img: 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=400&q=80', prep: 'Depositar sin bolsas ni piedras mezcladas.', error: 'Barrer las hojas secas junto a envoltorios plásticos al tacho marrón.', tiempo: '1 a 3 meses', impacto: 'Aporta carbono indispensable para el compostaje universitario.', consejo: 'El área de mantenimiento lleva las podas al vivero UCV.' },
+      { nombre: 'Cubiertos Plásticos Descartables', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (grasos) / Verde (limpios)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=400&q=80', prep: 'Si tienen restos de grasa van al negro. Si están lavados al verde.', error: 'Tirar cubiertos con grasa al contenedor de botellas limpias.', tiempo: '200 a 400 años', impacto: 'Relleno sanitario.', consejo: 'Lleva tu juego de cubiertos de metal en la mochila.' },
+      { nombre: 'Lapiceros y Plumones Gastados', cat: 'aulas', catNombre: 'Aulas y Oficina', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=400&q=80', prep: 'Desechar en el tacho negro al terminar su tinta.', error: 'Creer que son reciclables: combinan varios plásticos, resorte y tinta.', tiempo: '300 a 500 años', impacto: 'Disposición final en relleno sanitario.', consejo: 'Elige lapiceros con repuestos de tinta recargables.' },
+      { nombre: 'Cajas de Cartón Corrugado', cat: 'aulas', catNombre: 'Aulas y Oficina', tacho: 'Tacho Azul / Verde (Cartón)', tachoClass: 'bg-blue-950 text-blue-300 border-blue-700/60', img: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=400&q=80', prep: 'Desarma las solapas, retira cintas adhesivas y aplástala plana.', error: 'Meter la caja armada entera tapando la boca del tacho.', tiempo: '1 año', impacto: 'Vuelve a la industria con hasta 7 ciclos de reciclaje.', consejo: 'Desarma siempre las cajas de encomiendas recibidas en campus.' },
+      { nombre: 'Frasco de Alcohol en Gel Vacío', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde (Aprovechables)', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80', prep: 'Verifica que esté gastado al 100%, enjuaga y retira el dispensador.', error: 'Tirarlo con alcohol líquido inflamable remanente.', tiempo: '150 a 300 años', impacto: 'Materia prima para envases de limpieza PEAD.', consejo: 'En los pasillos hay dispensadores para recargar tu frasco.' },
+      { nombre: 'Lata de Aerosol / Desodorante Vacía', cat: 'envases', catNombre: 'Envases y Bebidas', tacho: 'Tacho Verde (100% Vacía)', tachoClass: 'bg-emerald-950 text-emerald-300 border-emerald-700/60', img: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1584727638096-042c45049ebe?auto=format&fit=crop&w=400&q=80', prep: 'Presiona el botón hasta que no quede nada de gas y retira la tapa.', error: 'Intentar perforarla con tijeras (¡peligro de explosión!).', tiempo: '200 a 400 años', impacto: 'Fundición metálica para construcción.', consejo: 'Si aún tiene producto químico caducado, va al tacho rojo.' },
+      { nombre: 'Papel Toalla Húmedo de Baño', cat: 'otros', catNombre: 'Higiene y Sanitarios', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&w=400&q=80', prep: 'Desechar en el tacho de pedal dentro del servicio higiénico.', error: 'Tirarlo al inodoro (atora cañerías) o al tacho azul de papel limpio.', tiempo: '3 a 6 meses', impacto: 'Relleno sanitario municipal.', consejo: 'Sacude las manos 10 veces para usar una sola hoja de papel toalla.' },
+      { nombre: 'Huesos de Pollo o Carnes', cat: 'cafeteria', catNombre: 'Cafetería y Alimentos', tacho: 'Tacho Negro (No Aprovechables)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80', prep: 'Depositar en el tacho negro del comedor.', error: 'Meterlos al tacho marrón: atraen plagas y no se descomponen rápido.', tiempo: '5 a 15 años', impacto: 'Disposición segura en relleno sanitario.', consejo: 'Separa tus ensaladas al marrón y los huesos al tacho negro.' },
+      { nombre: 'Foco Ahorrador / Fluorescente Roto', cat: 'peligrosos', catNombre: 'Peligrosos y RAEE', tacho: 'Tacho Rojo (Peligrosos)', tachoClass: 'bg-red-950 text-red-300 border-red-700/60', img: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=400&q=80', prep: 'No inhalar el polvo interior. Envolver con periódico o cartón.', error: 'Tirarlo al tacho negro común; el vapor de mercurio es muy tóxico.', tiempo: 'El mercurio permanece tóxico indefinidamente.', impacto: 'Tratamiento químico especial por empresa operadora.', consejo: 'Avisa al personal de mantenimiento si ves un foco roto.' },
+      { nombre: 'Cuaderno Universitario Usado', cat: 'aulas', catNombre: 'Aulas y Oficina', tacho: 'Tacho Azul (Hojas) / Verde (Espiral)', tachoClass: 'bg-blue-950 text-blue-300 border-blue-700/60', img: 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80', prep: 'Extrae el espiral metálico (va al verde). Todas las hojas van al azul.', error: 'Tirar el cuaderno entero con el espiral de alambre que traba máquinas.', tiempo: 'Hojas: 3 meses. Espiral: 100 años.', impacto: 'Reciclaje de fibra celulósica de máxima pureza.', consejo: 'Digitaliza tus apuntes con Google Drive antes de reciclar.' },
+      { nombre: 'Vidrio Roto o Espejo Quebrado', cat: 'peligrosos', catNombre: 'Peligrosos y RAEE', tacho: 'Tacho Negro (Embalado de Seguridad)', tachoClass: 'bg-stone-950 text-stone-300 border-stone-700', img: 'https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1605647540924-852290f6b0d5?auto=format&fit=crop&w=400&q=80', prep: 'Envuelve los trozos cortantes con varias capas de cartón o botella de plástico cortada, sella con cinta e indica con plumón "VIDRIO ROTO".', error: 'Tirarlo suelto en una bolsa plástica cortando al personal de limpieza.', tiempo: '4,000 años', impacto: 'Los espejos no se funden como botellas; van a relleno.', consejo: 'Cuidar al personal de limpieza es deber de todos los vallejianos.' },
+      { nombre: 'Batería de Celular o Laptop Inflada', cat: 'peligrosos', catNombre: 'Peligrosos y RAEE', tacho: 'Tacho Rojo (Peligrosos / RAEE)', tachoClass: 'bg-red-950 text-red-300 border-red-700/60', img: 'https://images.unsplash.com/photo-1592659762303-90081d14b077?auto=format&fit=crop&w=400&q=80', fallback: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=400&q=80', prep: 'No pinches ni dobles la batería. Guárdala en bolsa con cinta en polos.', error: 'Tirarla a la basura ordinaria; puede arder al entrar en contacto con aire.', tiempo: 'Metales pesados contaminantes persistentes.', impacto: 'Extracción de cobalto, litio y níquel en refinerías RAEE.', consejo: 'Llévala al módulo especial de la Escuela de Ingeniería Ambiental.' }
+    ];
+
+    function renderMaterials(list) {
+      const grid = document.getElementById('materials-grid');
+      grid.innerHTML = '';
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'group bg-stone-900 rounded-2xl border border-stone-800 hover:border-emerald-500 cursor-pointer overflow-hidden p-2 text-center space-y-2 transition-all duration-200 hover:-translate-y-1 shadow-md flex flex-col justify-between';
+        div.onclick = () => openMaterialModal(item);
+        div.innerHTML = `
+          <div>
+            <div class="relative w-full aspect-square overflow-hidden rounded-xl bg-stone-950">
+              <img src="${item.img}" onerror="this.src='${item.fallback}'" alt="${item.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div>
+              <span class="absolute bottom-1.5 left-1.5 right-1.5 text-[9px] text-stone-300 bg-stone-950/80 backdrop-blur-sm rounded px-1 py-0.5 truncate border border-stone-800">
+                ${item.catNombre}
+              </span>
+            </div>
+            <div class="text-xs font-bold text-white pt-2 line-clamp-2 leading-tight">${item.nombre}</div>
+          </div>
+          <div class="space-y-1">
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded border block truncate ${item.tachoClass}">
+              ${item.tacho.split('(')[0].trim()}
+            </span>
+            <div class="text-[10px] text-emerald-400 group-hover:underline">Ver preparación &rarr;</div>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    function filterMaterials() {
+      const q = document.getElementById('mat-search').value.toLowerCase();
+      const filtered = RESIDUOS_LISTA.filter(item => {
+        const matchesQuery = item.nombre.toLowerCase().includes(q) || item.tacho.toLowerCase().includes(q) || item.prep.toLowerCase().includes(q);
+        const matchesCat = activeCategory === 'todos' || item.cat === activeCategory;
+        return matchesQuery && matchesCat;
+      });
+      renderMaterials(filtered);
+    }
+
+    function setFilterCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-stone-950', 'font-bold', 'border-emerald-500');
+        btn.classList.add('bg-stone-900', 'text-stone-300', 'border-stone-800');
+      });
+      event.target.classList.remove('bg-stone-900', 'text-stone-300', 'border-stone-800');
+      event.target.classList.add('bg-emerald-600', 'text-stone-950', 'font-bold', 'border-emerald-500');
+      filterMaterials();
+    }
+
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      const txt = document.getElementById('toast-text');
+      txt.innerText = text;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 4000);
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-user').value;
+      const c = document.getElementById('login-campus').value;
+      document.getElementById('nav-user-name').innerText = u.split('@')[0];
+      document.getElementById('nav-campus-label').innerText = c;
+      openContent();
+      showToast('¡Bienvenido a EcoSort UCV!');
+    }
+
+    function quickDemoLogin() {
+      document.getElementById('nav-user-name').innerText = 'Valeria Mendoza';
+      openContent();
+      showToast('¡Acceso rápido concedido como Estudiante UCV!');
+    }
+
+    function openContentAsGuest() {
+      document.getElementById('nav-user-name').innerText = 'Visitante';
+      openContent();
+      showToast('Ingresaste como visitante a los contenidos.');
+    }
+
+    function openContent() {
+      document.getElementById('screen-inicio').classList.add('hidden');
+      document.getElementById('screen-content').classList.remove('hidden');
+      switchTab('tachos');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function backToInicio() {
+      document.getElementById('screen-content').classList.add('hidden');
+      document.getElementById('screen-inicio').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.content-panel').forEach(p => p.classList.add('hidden'));
+      const target = document.getElementById('content-' + tabId);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.sidebar-btn').forEach(b => {
+        b.classList.remove('border-emerald-600', 'bg-emerald-950/80', 'text-white');
+        b.classList.add('border-stone-800', 'bg-stone-950/60', 'text-stone-300');
+      });
+
+      const activeBtn = document.getElementById('btn-tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-stone-800', 'bg-stone-950/60', 'text-stone-300');
+        activeBtn.classList.add('border-emerald-600', 'bg-emerald-950/80', 'text-white');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function openBinModal(colorKey) {
+      const b = TACHOS_DATA[colorKey];
+      if (!b) return;
+      const modal = document.getElementById('modal-content');
+      modal.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800">${b.norma}</span>
+        </div>
+        <h3 class="text-2xl font-bold text-white">${b.titulo}</h3>
+        
+        <div class="relative h-48 rounded-2xl overflow-hidden border border-stone-800 bg-stone-950">
+          <img src="${b.imagen}" onerror="this.src='${b.fallback}'" alt="${b.titulo}" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent"></div>
+          <div class="absolute bottom-3 left-4 right-4 text-xs text-stone-200">${b.desc}</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="p-3.5 bg-emerald-950/30 border border-emerald-800/60 rounded-2xl space-y-1.5">
+            <strong class="text-emerald-400 block text-xs">&check; &iquest;Qu&eacute; materiales S&Iacute; van?</strong>
+            <ul class="space-y-1 text-stone-300 text-[11px]">
+              ${b.si.map(s => `<li>&bull; ${s}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="p-3.5 bg-rose-950/30 border border-rose-800/60 rounded-2xl space-y-1.5">
+            <strong class="text-rose-400 block text-xs">&times; &iquest;Qu&eacute; est&aacute; PROHIBIDO arrojar?</strong>
+            <ul class="space-y-1 text-stone-300 text-[11px]">
+              ${b.no.map(n => `<li>&bull; ${n}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <div class="p-3.5 bg-stone-950 rounded-2xl border border-stone-800 space-y-1">
+          <strong class="text-amber-300 block text-xs">Protocolo de Preparaci&oacute;n UCV:</strong>
+          <p class="text-stone-300 text-[11px] leading-relaxed">${b.prep}</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+            <div class="text-stone-400 text-[10px] uppercase font-bold">Destino Final:</div>
+            <div class="text-stone-200 text-[11px] mt-0.5">${b.destino}</div>
+          </div>
+          <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+            <div class="text-stone-400 text-[10px] uppercase font-bold">Impacto Ambiental:</div>
+            <div class="text-emerald-400 text-[11px] mt-0.5 font-medium">${b.impacto}</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-stone-950 rounded-xl border border-stone-800 text-xs">
+          <span class="text-stone-400"><strong>Degradaci&oacute;n estimada:</strong></span>
+          <span class="text-amber-400 font-semibold">${b.tiempo}</span>
+        </div>
+      `;
+      document.getElementById('info-modal').classList.remove('hidden');
+    }
+
+    function openMaterialModal(m) {
+      const modal = document.getElementById('modal-content');
+      modal.innerHTML = `
+        <div class="relative h-44 rounded-2xl overflow-hidden bg-stone-950 border border-stone-800">
+          <img src="${m.img}" onerror="this.src='${m.fallback}'" alt="${m.nombre}" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/30 to-transparent"></div>
+          <span class="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md ${m.tachoClass}">
+            Destino: ${m.tacho}
+          </span>
+        </div>
+
+        <div>
+          <span class="text-[10px] text-emerald-400 uppercase font-semibold">${m.catNombre}</span>
+          <h3 class="text-xl font-bold text-white">${m.nombre}</h3>
+        </div>
+
+        <div class="p-3.5 bg-emerald-950/30 border border-emerald-800/60 rounded-2xl space-y-1">
+          <strong class="text-emerald-400 block text-xs">&check; &iquest;C&oacute;mo prepararlo correctamente?</strong>
+          <p class="text-stone-300 text-[11px] leading-relaxed">${m.prep}</p>
+        </div>
+
+        <div class="p-3.5 bg-rose-950/30 border border-rose-800/60 rounded-2xl space-y-1">
+          <strong class="text-rose-400 block text-xs">&times; Error m&aacute;s com&uacute;n en campus:</strong>
+          <p class="text-rose-200 text-[11px] leading-relaxed">${m.error}</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+            <div class="text-[10px] text-stone-400">Degradaci&oacute;n:</div>
+            <div class="text-amber-400 font-semibold text-[11px]">${m.tiempo}</div>
+          </div>
+          <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+            <div class="text-[10px] text-stone-400">Impacto Positivo:</div>
+            <div class="text-emerald-400 font-semibold text-[11px] truncate">${m.impacto}</div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-stone-950 rounded-xl border border-stone-800 text-[11px] text-stone-300">
+          <strong class="text-stone-200">Consejo UCV:</strong> ${m.consejo}
+        </div>
+      `;
+      document.getElementById('info-modal').classList.remove('hidden');
+    }
+
+    function closeInfoModal() {
+      document.getElementById('info-modal').classList.add('hidden');
+    }
+
+    function openUploadModal(title, pts) {
+      document.getElementById('upload-title').innerText = title;
+      document.getElementById('upload-pts-badge').innerText = '+' + pts + ' Puntos';
+      currentChallengePoints = pts;
+      document.getElementById('upload-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeUploadModal() {
+      document.getElementById('upload-modal').classList.add('hidden');
+    }
+
+    function handleFileSelected(e) {
+      if (e.target.files && e.target.files[0]) {
+        document.getElementById('upload-file-label').innerText = 'Archivo listo: ' + e.target.files[0].name;
+      }
+    }
+
+    function submitEvidence() {
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+      userPoints += currentChallengePoints;
+      updatePointsDisplay();
+      closeUploadModal();
+      showToast('¡Evidencia validada con éxito! Ganaste +' + currentChallengePoints + ' puntos.');
+    }
+
+    function openQRModal() {
+      document.getElementById('qr-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeQRModal() {
+      document.getElementById('qr-modal').classList.add('hidden');
+    }
+
+    function simulateScanFor(code, name) {
+      document.getElementById('qr-station-info').innerText = '¡Estación ' + name + ' (' + code + ') Detectada!';
+      openQRModal();
+    }
+
+    function claimQRScan() {
+      confetti({ particleCount: 70, spread: 60 });
+      userPoints += 25;
+      updatePointsDisplay();
+      closeQRModal();
+      showToast('¡Escaneo QR verificado en campus! Ganaste +25 puntos.');
+    }
+
+    function updatePointsDisplay() {
+      document.getElementById('nav-user-pts').innerText = userPoints + ' pts';
+      document.getElementById('nav-user-pts-mobile').innerText = userPoints + 'p';
+      document.getElementById('retos-pts-display').innerText = userPoints + ' Eco-Puntos';
+      document.getElementById('rank-pts-label').innerText = userPoints + ' eco-puntos';
+      
+      const rankTitle = document.getElementById('rank-title');
+      const rankBar = document.getElementById('rank-bar');
+      if (userPoints >= 1000) {
+        rankTitle.innerText = 'Líder Ambiental UCV';
+        rankBar.style.width = '100%';
+      } else if (userPoints >= 600) {
+        rankTitle.innerText = 'Agente Sostenible';
+        rankBar.style.width = Math.min(100, Math.round(((userPoints - 600) / 400) * 100)) + '%';
+      } else {
+        rankTitle.innerText = 'Eco-Guardián';
+        rankBar.style.width = Math.min(100, Math.round((userPoints / 600) * 100)) + '%';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMaterials(RESIDUOS_LISTA);
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
